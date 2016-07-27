@@ -1,11 +1,10 @@
-# find_pokemon
 #files discription:
 
-  filter: save pokemon ID you want to search on map.
+    filter: save pokemon ID you want to search on map.
   
-  search_region.json: save regions you want to search map.
+    search_region.json: save regions you want to search map.
   
-  results: save the pokemon found on map, include theirs coordinate and expiration time.
+    results: save the pokemon found on map, include theirs coordinate and expiration time.
   
   
 #preparation:
