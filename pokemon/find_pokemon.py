@@ -13,6 +13,8 @@ class pokemonFind_crawler(scrapy.Spider):
     regions = {}    
     api_url = 'https://pokevision.com/map/data/%f/%f'
     download_delay = 0.1
+    former_longitude = 0
+    former_latitude = 0
     stepSize = 0.008
 
     def __init__(self, *a, **kw):
@@ -53,11 +55,15 @@ class pokemonFind_crawler(scrapy.Spider):
         if pos['status'] == 'success':
             for pokemon in pos['pokemon']:
                 if  pokemon['pokemonId'] in self.pokefil and pokemon['id'] not in self.id_record:
+                    if self.former_latitude == pokemon['latitude'] and self.former_longitude == pokemon['longitude']:
+                        return
+                    self.former_latitude = pokemon['latitude']
+                    self.former_longitude = pokemon['longitude']
                     exptime = datetime.datetime.fromtimestamp(pokemon['expiration_time'])
                     self.id_record.add(pokemon['id'])
                     with open('result', 'a') as f:
-                        f.write("Pokemon: %s, city:%s Coordinate: (%f, %f), Expired time: %s\n"
-                            %(pokemon['pokemonId'],response.meta['city'], pokemon['latitude'],pokemon['longitude'], exptime.strftime('%Y-%m-%d %H:%M:%S')))
+                        f.write('Pokemon: {0:>3}, Coordinate: <wpt lat="{1:f}" lon="{2:<f}">, Expired time: {3}, city:{4:<13}\n'
+                            .format(pokemon['pokemonId'], pokemon['latitude'],pokemon['longitude'], exptime.strftime('%Y-%m-%d %H:%M:%S'), response.meta['city']))
 
     def spider_idle(self):
         request = Request(self.api_url%(37.8089603,-122.4104494),callback=self.search_regions, dont_filter = True)
